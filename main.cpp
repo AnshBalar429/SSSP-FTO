@@ -22,6 +22,23 @@ void Numerator() {
         graph[v].push_back(u);
         edges.push_back({u, v});
     }
+
+    const int INF = INT_MAX / 2;
+    // 1) BFS from source to build dist0 and parent pointers
+    std::vector<int> dist0(n, INF), parent(n, -1);
+    std::deque<int> dq;
+    dist0[s] = 0;
+    dq.push_back(s);
+    while (!dq.empty()) {
+        int u = dq.front(); dq.pop_front();
+        for (int v : graph[u]) {
+            if (dist0[v] > dist0[u] + 1) {
+                dist0[v] = dist0[u] + 1;
+                parent[v] = u;
+                dq.push_back(v);
+            }
+        }
+    }
 }
 
 int main() {
