@@ -39,6 +39,38 @@ void Numerator() {
             }
         }
     }
+
+    // Build BFS tree adjacency for LCA
+    std::vector<std::vector<int>> tree(n);
+    for (int v = 0; v < n; v++) {
+        if (parent[v] >= 0) tree[parent[v]].push_back(v);
+    }
+
+    // 2) LCA preprocessing: tin/tout + binary lifting
+    int LOG = 1;
+    while ((1 << LOG) <= n) LOG++;
+    std::vector<std::vector<int>> up(LOG, std::vector<int>(n, -1));
+    std::vector<int> depth(n), tin(n), tout(n);
+    int timer = 0;
+    std::function<void(int,int)> dfs = [&](int u, int p) {
+        tin[u] = timer++;
+        up[0][u] = p;
+        for (int k = 1; k < LOG; k++) {
+            int pp = up[k-1][u];
+            up[k][u] = (pp < 0 ? -1 : up[k-1][pp]);
+        }
+        for (int v : tree[u]) {
+            depth[v] = depth[u] + 1;
+            dfs(v, u);
+        }
+        tout[u] = timer++;
+    };
+    dfs(s, -1);
+
+    auto isAncestor = [&](int u, int v) {
+        return tin[u] <= tin[v] && tout[v] <= tout[u];
+    };
+
 }
 
 int main() {
