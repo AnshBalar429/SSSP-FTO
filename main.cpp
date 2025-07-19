@@ -71,6 +71,49 @@ void Numerator() {
         return tin[u] <= tin[v] && tout[v] <= tout[u];
     };
 
+     // 3) Sample landmarks L
+    std::mt19937_64 rng(123456);
+    double p = std::pow(n, -ALPHA);
+    std::bernoulli_distribution pick(p);
+    std::vector<int> landmarks;
+    std::vector<char> is_landmark(n);
+    // // e.g. include s and its direct neighbors as landmarks:
+    // is_landmark[s] = 1;
+    // for(int w: graph[s]) is_landmark[w] = 1;
+    // // then do the random sampling for the rest…
+
+    for (int v = 0; v < n; v++) {
+        if (pick(rng)) {
+            is_landmark[v] = 1;
+            landmarks.push_back(v);
+        }
+    }
+    int L = landmarks.size();
+
+    // 4) BFS from each landmark: dist_l_v
+    std::vector<std::vector<int>> dist_l_v(L, std::vector<int>(n, INF));
+    auto bfs = [&](int src, std::pair<int,int> forbid, std::vector<int>& out) {
+        std::fill(out.begin(), out.end(), INF);
+        std::deque<int> q;
+        out[src] = 0;
+        q.push_back(src);
+        while (!q.empty()) {
+            int u = q.front(); q.pop_front();
+            for (int w : graph[u]) {
+                if (u == forbid.first && w == forbid.second) continue;
+                if (out[w] > out[u] + 1) {
+                    out[w] = out[u] + 1;
+                    q.push_back(w);
+                }
+            }
+        }
+    };
+    std::vector<int> tmp(n);
+    for (int i = 0; i < L; i++) {
+        bfs(landmarks[i], {-1,-1}, dist_l_v[i]);
+    }
+
+
 }
 
 int main() {
