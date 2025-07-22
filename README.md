@@ -70,3 +70,24 @@ Together, these give us **constant‑time look‑ups** of any of the above dista
 
 ---
 
+## 4. Answering a query $\bigl(t,e=(u\!\to\!w)\bigr)$
+
+1. **Quick‑path check (LCA):**
+   If $e$ is *not* on the SPT‑path from $s\to t$, return $\mathrm{dist}(s,t)$ immediately.
+
+2. **Otherwise** $e$ *is* on the path.  Let $\ell_1,\ell_2$ be the first and second landmarks on the *original* path $s\to t$.  There are three cases for where $e$ “breaks” the path:
+
+   | Case | Geometric picture                        | Detour uses landmark   | Cost lookup                                                                      |
+   | ---- | ---------------------------------------- | ---------------------- | -------------------------------------------------------------------------------- |
+   |  1   | $e$ lies *before* $\ell_1$               | $\ell_1$               | $\mathrm{dist}(s\to\ell_1\mid\neg e)\;+\;\mathrm{dist}(\ell_1\to t)$             |
+   |  2   | $e$ lies *between* $\ell_1$ and $\ell_2$ | $\ell_2$               | $\mathrm{dist}(s\to\ell_2\mid\neg e)\;+\;\mathrm{dist}(\ell_2\to t)$             |
+   |  3   | $e$ lies *after* $\ell_2$                | *some* landmark in $L$ | $\min_{\ell\in L}\{\mathrm{dist}(s\to\ell\mid\neg e)+\mathrm{dist}(\ell\to t)\}$ |
+
+3. **Take the minimum** of these three candidate detours.  Since each lookup is $O(1)$ (except the “min over $L$” in Case 3 which is $O(|L|)=O(n^{1-\alpha})$), the total query time is
+
+   $$
+     O\bigl(n^{1-\alpha}\bigr)\quad\text{worst‑case.}
+   $$
+
+---
+
