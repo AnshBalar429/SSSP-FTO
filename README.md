@@ -46,4 +46,27 @@ That means: if you fail an edge *far out* along the path, the detour must re‑j
 
 ---
 
+## 3. Preprocessing phases
+
+We build three tables:
+
+1. **$\mathrm{dist}(s\!\to\!\ell\mid\neg e)$** for *every* edge $e\in E$ and *every* landmark $\ell\in L$.
+
+   * Interpretation: “If $e$ is deleted, how far is $s$ from $\ell$?”
+   * Computed by running one BFS *per edge* (deleting that edge) and reading off distances to all $\ell$.
+   * Space: $O(m\cdot |L|)$.
+
+2. **$\mathrm{dist}(\ell\!\to\!v)$** for every landmark $\ell$ and *every* vertex $v$.
+
+   * Just BFS from each $\ell$ in the *undeleted* graph.
+   * Space: $O(|L|\cdot n)$.
+
+3. **First‑two‑landmark pointers** on the *failure‑free* shortest‑path from $s\to v$.
+
+   * For each $v$, record $\ell_1$ := first landmark you hit walking from $s$ to $v$ in the SPT, and $\ell_2$ := second one.
+   * This lets us know *which* landmark lies “just after” the failed edge.
+
+Together, these give us **constant‑time look‑ups** of any of the above distances.
+
+---
 
